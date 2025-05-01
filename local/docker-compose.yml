@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: gandalf-db
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: strongpassword
+      POSTGRES_DB: gandalf
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/dev_initial:/docker-entrypoint-initdb.d
+    networks:
+      - gandalf_network
+
+volumes:
+  postgres_data:
+
+networks:
+  gandalf_network:

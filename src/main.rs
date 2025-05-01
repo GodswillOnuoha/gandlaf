@@ -1,18 +1,20 @@
-fn main() {
-    let result = run_app();
-    println!("{result}");
-}
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_imports)]
+// FIXME: The code above should only be used in development.
 
-fn run_app() -> &'static str {
-    "Hello, world!"
-}
+mod config;
 
-#[cfg(test)]
-mod tests {
-    use crate::run_app;
+use std::net::TcpListener;
 
-    #[test]
-    fn it_works() {
-        assert_eq!(run_app(), "Hello, world!");
-    }
+use config::database;
+use dotenvy::dotenv;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv().ok();
+
+    let db_connection_pool = database::get_db_connection_pool().await;
+
+    Ok(())
 }
