@@ -52,3 +52,32 @@ pub async fn get_db_connection_pool() -> &'static PgPool {
         })
         .await
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serial_test::serial;
+    use std::env;
+
+    fn set_env(key: &str, value: &str) {
+        unsafe {
+            env::set_var(key, value);
+        }
+    }
+
+    #[test]
+    #[serial]
+    fn test_db_config_from_env() {
+        // Set environment variables
+        set_env("DB_URL", "postgres://testuser:testpass@localhost/testdb");
+        set_env("MAX_DB_CONNECTIONS", "10");
+
+        let config = DBConfig::from_env();
+
+        assert_eq!(
+            config.database_url,
+            "postgres://testuser:testpass@localhost/testdb"
+        );
+        assert_eq!(config.max_db_connections, 10);
+    }
+}

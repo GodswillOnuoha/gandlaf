@@ -16,5 +16,6 @@ target/
 # Test coverage
 **.profraw
 
+.DS_Store
 Cargo.lock
 .env
