@@ -1,18 +1,32 @@
-fn main() {
-    let result = run_app();
-    println!("{result}");
-}
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_imports)]
+// FIXME: The code above should only be used in development.
 
-fn run_app() -> &'static str {
-    "Hello, world!"
-}
+use gandalf::{
+    app,
+    config::{database, get_config, telemetry},
+};
+use tokio::net::TcpListener;
+use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
-#[cfg(test)]
-mod tests {
-    use crate::run_app;
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Load environment variables from .env file
+    dotenvy::dotenv().ok();
+    // Initialize tracing
+    telemetry::init_tracing();
 
-    #[test]
-    fn it_works() {
-        assert_eq!(run_app(), "Hello, world!");
-    }
+    let config = get_config();
+    let db_connection_pool = database::get_db_connection_pool().await;
+    let listener = TcpListener::bind(format!("0.0.0.0:{}", config.app_port))
+        .await
+        .expect("Failed to bind to address");
+    let app = app::build_app();
+
+    tracing::debug!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app)
+        .await
+        .expect("Failed to start server");
+    Ok(())
 }
