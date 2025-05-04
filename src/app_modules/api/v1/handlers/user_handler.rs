@@ -9,12 +9,12 @@ use tracing::debug;
 use crate::adapters::repositories::PgUserRepository;
 use crate::app_modules::AppState;
 use crate::app_modules::api::ResponseResult;
-use crate::app_modules::api::v1::schemas::{RegistrationRequestLocal, UserResponse};
+use crate::app_modules::api::v1::schemas::{AuthLocal, UserResponse};
 use crate::domain::services::UserService;
 
 pub async fn create_user(
     State(state): State<AppState>,
-    Json(payload): Json<RegistrationRequestLocal>,
+    Json(payload): Json<AuthLocal>,
 ) -> ResponseResult<impl IntoResponse> {
     debug!("user registration: {}", payload.email);
 
