@@ -26,34 +26,18 @@ impl PgUserRepository {
     pub fn new(pool: Arc<PgPool>) -> Self {
         Self { pool }
     }
-}
 
-#[async_trait]
-impl UserRepository for PgUserRepository {
-    async fn email_exists(&self, email: &str) -> Result<bool> {
-        let conn = self.pool.get().await?;
-
-        let query: &str = r#"
+    fn email_exists_query() -> &'static str {
+        r#"
             SELECT
                 email
             FROM auth.users
             WHERE email = $1
-        "#;
-
-        let params: &[&(dyn ToSql + Sync)] = &[&email];
-
-        let row = conn.query_opt(query, params).await?;
-
-        match row {
-            Some(_) => Ok(true),
-            None => Ok(false),
-        }
+        "#
     }
 
-    async fn save(&self, user: &User) -> Result<()> {
-        let conn = self.pool.get().await?;
-
-        let query: &str = r#"
+    fn save_user_query() -> &'static str {
+        r#"
             INSERT INTO auth.users (
                 id,
                 external_id,
@@ -84,7 +68,25 @@ impl UserRepository for PgUserRepository {
                 $16, $17, $18, $19, $20,
                 $21, $22
             )
-        "#;
+        "#
+    }
+}
+
+#[async_trait]
+impl UserRepository for PgUserRepository {
+    async fn email_exists(&self, email: &str) -> Result<bool> {
+        let conn = self.pool.get().await?;
+        let params: &[&(dyn ToSql + Sync)] = &[&email];
+        let row = conn.query_opt(Self::email_exists_query(), params).await?;
+
+        match row {
+            Some(_) => Ok(true),
+            None => Ok(false),
+        }
+    }
+
+    async fn save(&self, user: &User) -> Result<()> {
+        let conn = self.pool.get().await?;
 
         let params: &[&(dyn ToSql + Sync)] = &[
             &user.id,
@@ -104,14 +106,14 @@ impl UserRepository for PgUserRepository {
             &user.updated_at,
             &user.last_login_at,
             &user.requires_mfa,
-            &user.auth_provider.to_string(), // convert enum to string or int
-            &user.user_state.to_string(),    // same
-            &user.last_login_ip,             // .map(|ip| ip.to_string()),
+            &user.auth_provider.to_string(),
+            &user.user_state.to_string(),
+            &user.last_login_ip,
             &user.last_user_agent,
             &user.deletion_scheduled_at,
         ];
 
-        conn.execute(query, params).await?;
+        conn.execute(Self::save_user_query(), params).await?;
         Ok(())
     }
 }

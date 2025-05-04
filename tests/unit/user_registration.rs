@@ -4,13 +4,13 @@ use gandalf::adapters::repositories::Error as RepositoryError;
 use gandalf::domain::models::User;
 use gandalf::domain::services::{Error, UserService};
 
-use crate::mocks::Mock_UserRepository;
+use crate::mocks::MockUserRepository;
 
-fn setup_service_with_mock<F>(setup: F) -> UserService<Mock_UserRepository>
+fn setup_service_with_mock<F>(setup: F) -> UserService<MockUserRepository>
 where
-    F: FnOnce(&mut Mock_UserRepository),
+    F: FnOnce(&mut MockUserRepository),
 {
-    let mut mock_repo = Mock_UserRepository::new();
+    let mut mock_repo = MockUserRepository::new();
     setup(&mut mock_repo);
     UserService::new(mock_repo)
 }
