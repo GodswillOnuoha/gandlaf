@@ -1,6 +1,7 @@
 /*
 This module contains config settings for authentication.
 */
+
 use super::defaults;
 use std::env;
 use std::sync::OnceLock;

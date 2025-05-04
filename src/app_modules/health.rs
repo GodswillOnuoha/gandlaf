@@ -1,3 +1,5 @@
+/* Module for health check */
+
 use axum::Json;
 use serde::Serialize;
 
