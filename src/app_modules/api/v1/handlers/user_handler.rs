@@ -1,6 +1,5 @@
 /* V1 user handler module */
 
-// use axum::Json;
 use axum::{
     extract::{Json, State},
     response::IntoResponse,
@@ -11,7 +10,7 @@ use crate::adapters::repositories::PgUserRepository;
 use crate::app_modules::AppState;
 use crate::app_modules::api::ResponseResult;
 use crate::app_modules::api::v1::schemas::{RegistrationRequestLocal, UserResponse};
-use crate::domain::services::user_service::UserService;
+use crate::domain::services::UserService;
 
 pub async fn create_user(
     State(state): State<AppState>,
