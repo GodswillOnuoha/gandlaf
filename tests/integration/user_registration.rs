@@ -13,7 +13,7 @@ async fn check_email_exists() {
 
     let email_exists: bool = user_repo.email_exists("test@mail.com").await.unwrap();
 
-    assert_eq!(email_exists, false);
+    assert!(!email_exists);
 }
 
 #[tokio::test]
@@ -24,11 +24,11 @@ async fn create_user_succeeds() {
     let email = "test@mail.com";
 
     let email_exists: bool = user_repo.email_exists(email).await.unwrap();
-    assert_eq!(email_exists, false);
+    assert!(!email_exists);
 
     let user = User::new(email.to_string());
     user_repo.save(&user).await.unwrap();
 
     let email_exists: bool = user_repo.email_exists(email).await.unwrap();
-    assert_eq!(email_exists, true);
+    assert!(email_exists);
 }
