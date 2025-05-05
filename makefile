@@ -15,7 +15,7 @@ build: ## Build the project using cargo
 
 lint: ## Lint the project using cargo
 	@rustup component add clippy
-	cargo clippy
+	cargo clippy --all-targets --all-features -- -D warnings
 
 fmt: ## Format the project using cargo
 	@rustup component add rustfmt

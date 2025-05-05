@@ -1,3 +1,5 @@
+/* user registration unit test */
+
 use mockall::predicate::*;
 
 use gandalf::adapters::repositories::Error as RepositoryError;

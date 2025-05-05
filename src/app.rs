@@ -1,4 +1,4 @@
-/* Moudle buolds application and state */
+/* Moudle builds application and state */
 
 use std::sync::Arc;
 
