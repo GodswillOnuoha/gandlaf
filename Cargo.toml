@@ -42,4 +42,4 @@ validator = { version = "0.20.0", features = ["derive"] }
 serial_test = "3.2.0"
 mockall = "0.13.1"
 tower = "0.5.2"
-
+testcontainers = "0.24.0"
