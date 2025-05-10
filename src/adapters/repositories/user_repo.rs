@@ -9,7 +9,7 @@ use tokio_postgres::types::ToSql;
 
 use super::Result;
 use crate::config::database::PgPool;
-use crate::domain::models::user::User;
+use crate::domain::models::User;
 
 #[async_trait]
 pub trait UserRepository: Send + Sync {
