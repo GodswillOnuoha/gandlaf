@@ -1,29 +1,40 @@
 /* User services module */
 
-use crate::adapters::repositories::UserRepository;
-use crate::domain::models::user::User;
+use std::sync::Arc;
+use uuid::Uuid;
 
-use super::Result;
+use crate::adapters::repositories::{PgUserRepository, UserRepository};
+use crate::config::database::PgPool;
+use crate::domain::models::User;
+
 use super::errors::Error;
 
-pub struct UserService<R: UserRepository> {
-    repo: R,
+type Result<T> = std::result::Result<T, Error>;
+
+pub struct UserService {
+    repo: PgUserRepository,
 }
 
-impl<R: UserRepository> UserService<R> {
-    pub fn new(repo: R) -> Self {
-        Self { repo }
+impl UserService {
+    pub fn new(db_pool: Arc<PgPool>) -> Self {
+        Self {
+            repo: PgUserRepository::new(db_pool),
+        }
     }
 
-    pub async fn register_user(&self, email: String, password: String) -> Result<User> {
-        if self.repo.email_exists(&email).await? {
-            return Err(Error::UserAlreadyExists);
-        }
+    pub async fn user_exists(&self, email: &str) -> Result<bool> {
+        let exists = self.repo.email_exists(email).await?;
+        Ok(exists)
+    }
 
-        let mut user = User::new(email);
-        user.password_hash = Some(password);
+    pub async fn save_user(&self, user: &User) -> Result<()> {
+        self.repo.save(user).await?;
+        Ok(())
+    }
 
-        self.repo.save(&user).await?;
-        Ok(user)
+    pub async fn generate_email_verification_token(&self, _user_id: &Uuid) -> Result<String> {
+        // Todo: generate a token and save it to the database
+        // let token = Uuid::new_v4().to_string();
+        Ok("some very long verification token".to_string())
     }
 }

@@ -1,6 +1,7 @@
 /* domain models module */
 
-pub mod auth_provider;
-pub mod user;
+mod auth_provider;
+mod user;
 
+pub use auth_provider::AuthProvider;
 pub use user::User;
