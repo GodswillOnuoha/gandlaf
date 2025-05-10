@@ -14,6 +14,12 @@ pub enum Error {
     #[error("User already exists")]
     UserAlreadyExists,
 
+    #[error("Failed to hash password: {0}")]
+    PasswordHashingError(String),
+
+    #[error("Failed to verify password: {0}")]
+    PasswordVerificationError(String),
+
     #[error("Repository error: {0}")]
     RepositoryError(#[from] crate::adapters::repositories::Error),
 }
@@ -23,8 +29,16 @@ impl From<Error> for AppError {
         match error {
             Error::UserNotFound => AppError::NotFound("User not found".to_string()),
             Error::UserAlreadyExists => AppError::BadRequest("User already exists".to_string()),
+            Error::PasswordHashingError(err) => {
+                error!("{}", err);
+                AppError::Internal("Internal server error".to_string())
+            },
+            Error::PasswordVerificationError(err) => {
+                error!("{}", err);
+                AppError::Internal("Internal server error".to_string())
+            },
             Error::RepositoryError(err) => {
-                error!("Repository error: {}", err);
+                error!("{}", err);
                 AppError::Internal("Internal server error".to_string())
             }
         }
