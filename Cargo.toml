@@ -34,6 +34,7 @@ thiserror = "2.0.12"
 chrono = { version = "0.4.41", features = ["serde"] }
 uuid = { version = "1.16.0", features = ["v4", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
+argon2 = { version = "0.5.3", features = ["password-hash", "rand", "std"] }
 
 # Unclassified
 
