@@ -3,6 +3,7 @@
 use std::sync::Arc;
 use uuid::Uuid;
 
+use crate::adapters::dtos::AuthUserDto;
 use crate::adapters::repositories::{PgUserRepository, UserRepository};
 use crate::config::database::PgPool;
 use crate::domain::models::User;
@@ -20,6 +21,11 @@ impl UserService {
         Self {
             repo: PgUserRepository::new(db_pool),
         }
+    }
+
+    pub async fn find_auth_user(&self, id: &str) -> Result<Option<AuthUserDto>> {
+        let auth_user = self.repo.find_auth_user(id).await?;
+        Ok(auth_user)
     }
 
     pub async fn user_exists(&self, email: &str) -> Result<bool> {

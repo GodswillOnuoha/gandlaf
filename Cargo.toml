@@ -35,6 +35,10 @@ chrono = { version = "0.4.41", features = ["serde"] }
 uuid = { version = "1.16.0", features = ["v4", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 argon2 = { version = "0.5.3", features = ["password-hash", "rand", "std"] }
+jsonwebtoken = "9.3.1"
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = ["trace"] }
+
 
 # Unclassified
 
@@ -42,5 +46,4 @@ argon2 = { version = "0.5.3", features = ["password-hash", "rand", "std"] }
 [dev-dependencies]
 serial_test = "3.2.0"
 mockall = "0.13.1"
-tower = "0.5.2"
 testcontainers = "0.24.0"

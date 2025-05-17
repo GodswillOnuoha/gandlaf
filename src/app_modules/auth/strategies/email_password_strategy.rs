@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use tracing::error;
 
-use crate::adapters::dtos::SignupDto;
+use crate::adapters::dtos::{AuthUserDto, SignupDto};
 use crate::app_modules::auth::strategies::AuthStrategy;
 use crate::domain::models::AuthProvider;
 use crate::domain::models::User;
@@ -35,6 +35,31 @@ impl EmailPasswordAuthStrategy {
 
 #[async_trait::async_trait]
 impl AuthStrategy for EmailPasswordAuthStrategy {
+    async fn authenticate(&self, dto: &SignupDto) -> Result<AuthUserDto> {
+        let SignupDto::EmailPassord { email, password } = dto;
+
+        // Check if user exists
+        let auth_user = self
+            .user_service
+            .find_auth_user(email)
+            .await?
+            .ok_or(Error::InvalidCredentials)?;
+
+        // Verify password
+        let verified = self
+            .password_util
+            .verify_password(password, &auth_user.password_hash)
+            .map_err(|e| {
+                error!("Password verification failed: {}", e);
+                Error::InvalidCredentials
+            })?;
+
+        if !verified {
+            return Err(Error::InvalidCredentials);
+        }
+        Ok(auth_user)
+    }
+
     async fn signup(&self, dto: &SignupDto) -> Result<User> {
         let SignupDto::EmailPassord { email, password } = dto;
 

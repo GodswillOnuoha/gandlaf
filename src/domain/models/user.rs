@@ -7,7 +7,7 @@ use std::fmt;
 use std::net::IpAddr;
 use uuid::Uuid;
 
-use super::auth_provider::AuthProvider;
+use super::auth::AuthProvider;
 #[derive(Debug, Clone)]
 pub struct User {
     pub id: Uuid,

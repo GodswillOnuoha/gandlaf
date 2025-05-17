@@ -43,11 +43,13 @@ impl PasswordUtil {
     }
 
     /// Verifies a password against a stored Argon2 hash string.
-    pub fn verify_password(&self, password: &str, hash: &str) -> Result<(), PasswordError> {
+    pub fn verify_password(&self, password: &str, hash: &str) -> Result<bool, PasswordError> {
         let parsed_hash = PasswordHash::new(hash).map_err(|_| PasswordError::InvalidHash)?;
-        self.hasher
+
+        Ok(self
+            .hasher
             .verify_password(password.as_bytes(), &parsed_hash)
-            .map_err(|_| PasswordError::VerificationFailed)
+            .is_ok())
     }
 }
 
@@ -71,7 +73,7 @@ mod tests {
         assert!(PasswordHash::new(&hash).is_ok());
 
         let result = util.verify_password(password, &hash);
-        assert!(result.is_ok(), "Password should verify");
+        assert!(result.unwrap(), "Password should verify");
     }
 
     #[test]
@@ -83,7 +85,7 @@ mod tests {
         let hash = util.hash_password(password).expect("Should hash password");
         let result = util.verify_password(wrong_password, &hash);
 
-        assert!(matches!(result, Err(PasswordError::VerificationFailed)));
+        assert!(!result.unwrap(), "Password verification should fail");
     }
 
     #[test]
