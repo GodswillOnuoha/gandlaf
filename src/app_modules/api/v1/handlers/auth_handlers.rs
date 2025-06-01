@@ -1,9 +1,9 @@
 /* V1 user handler module */
 
-use std::net::IpAddr;
+use std::net::SocketAddr;
 
 use axum::{
-    extract::{Json, State},
+    extract::{ConnectInfo, Json, State},
     response::IntoResponse,
 };
 
@@ -14,16 +14,13 @@ use crate::app_modules::api::ResponseResult;
 use crate::app_modules::api::v1::schemas::{AuthLocal, AuthResponse, UserResponse};
 use crate::app_modules::{AppState, auth::AuthMethod};
 
-// use crate::app_modules::middleware::ClientIp;
-
 use crate::app_modules::api::AppError;
 
 pub async fn local_login(
     state: State<AppState>,
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
     Json(payload): Json<AuthLocal>,
 ) -> ResponseResult<impl IntoResponse> {
-    // debug!("user login: {}, from ip: {}", payload.email, ip);
-
     let strategy = match state
         .auth_service
         .strategies
@@ -45,7 +42,7 @@ pub async fn local_login(
         })
         .await?;
 
-    let ip: IpAddr = "192.168.1.1".parse().expect("Failed to parse IPv4");
+    let ip = addr.ip();
     let token = state.auth_service.make_session(auth_user, ip).await?;
 
     Ok(Json(AuthResponse {
