@@ -27,12 +27,10 @@ CREATE TABLE auth.users (
     email_verification_sent_at TIMESTAMPTZ NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    last_login_at TIMESTAMPTZ NULL,
     requires_mfa BOOLEAN DEFAULT FALSE,
     auth_provider VARCHAR(50) DEFAULT 'local',  -- 'local', 'google', 'microsoft', 'apple', 'lti', etc.
     user_state VARCHAR(50) DEFAULT 'registered', 
-    last_login_ip INET NULL,
-    last_user_agent TEXT NULL,
+    access_range VARCHAR(50) NOT NULL,
     deletion_scheduled_at TIMESTAMPTZ NULL,
     CONSTRAINT valid_auth_provider CHECK (auth_provider IN 
         ('local', 'google', 'microsoft', 'apple', 'facebook', 'lti', 'saml', 'ldap', 'custom')),
@@ -51,7 +49,7 @@ CREATE INDEX idx_users_auth_provider ON auth.users(auth_provider);
 CREATE TABLE auth.sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    refresh_token_hash VARCHAR NOT NULL,
+    refresh_token_hash TEXT NOT NULL,
     device_identifier VARCHAR(255) NULL,
     device_name VARCHAR(255) NULL,
     device_type VARCHAR(50) NULL,  -- 'mobile', 'desktop', 'tablet', etc.

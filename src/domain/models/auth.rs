@@ -16,8 +16,7 @@ type ResourceAccess = HashMap<String, HashMap<String, Vec<String>>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
-    pub sub: String,          // User ID
-    pub access_range: String, // Permissions/scope
+    pub sub: String, // User ID
     pub scope: String,
     pub sid: Uuid,                       // Session ID
     pub iss: String,                     // Issuer (auth server)
@@ -110,6 +109,37 @@ impl fmt::Display for TokenType {
             TokenType::Refresh => "refresh",
         };
         write!(f, "{}", token_type_str)
+    }
+}
+
+// AccessRange enum
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub enum AccessRange {
+    #[default]
+    User,
+    Global,
+}
+
+impl std::str::FromStr for AccessRange {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "user" => Ok(AccessRange::User),
+            "global" => Ok(AccessRange::Global),
+            _ => Err(format!("Invalid access range: {}", s)),
+        }
+    }
+}
+
+impl std::fmt::Display for AccessRange {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Convert enum variant to string representation
+        let range_str = match self {
+            AccessRange::User => "user",
+            AccessRange::Global => "global",
+        };
+        write!(f, "{}", range_str)
     }
 }
 
