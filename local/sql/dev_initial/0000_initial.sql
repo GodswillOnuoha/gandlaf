@@ -45,3 +45,22 @@ CREATE INDEX idx_users_email ON auth.users(email);
 CREATE INDEX idx_users_username ON auth.users(username);
 CREATE INDEX idx_users_external_id ON auth.users(external_id);
 CREATE INDEX idx_users_auth_provider ON auth.users(auth_provider);
+
+
+-- Sessions for user auth
+CREATE TABLE auth.sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    refresh_token_hash VARCHAR NOT NULL,
+    device_identifier VARCHAR(255) NULL,
+    device_name VARCHAR(255) NULL,
+    device_type VARCHAR(50) NULL,  -- 'mobile', 'desktop', 'tablet', etc.
+    ip_address INET NULL,
+    user_agent TEXT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_active_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    is_revoked BOOLEAN DEFAULT FALSE,
+    revoked_reason VARCHAR(50) NULL,
+    revoked_at TIMESTAMPTZ NULL
+);

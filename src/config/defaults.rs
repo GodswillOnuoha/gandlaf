@@ -11,13 +11,13 @@ pub const APP_HOST: &str = "localhost";
 pub const APP_PORT: u16 = 3000;
 
 // Auth defaults
-pub const JWT_EXPIRATION: u8 = 60;
+pub const JWT_EXPIRATION: u8 = 60; // in minutes
 pub const REFRESH_TOKEN_EXPIRATION: u8 = 30;
-pub const ACCESS_TOKEN_EXPIRATION: u8 = 15;
-pub const PASSWORD_RESET_EXPIRATION: u8 = 24;
-pub const VERIFICATION_CODE_EXPIRATION: u8 = 24;
+pub const ACCESS_TOKEN_EXPIRATION: u8 = 15; // in minutes
+pub const PASSWORD_RESET_EXPIRATION: u8 = 24; // in hours
+pub const VERIFICATION_CODE_EXPIRATION: u8 = 24; // in hours
 pub const MAX_FAILED_LOGIN_ATTEMPTS: u8 = 5;
-pub const ACCOUNT_LOCKOUT_DURATION: u8 = 30;
+pub const ACCOUNT_LOCKOUT_DURATION: u8 = 30; // in minutes
 
 // Db defaults
 pub const MAX_DB_CONNECTIONS: u16 = 5;

@@ -16,6 +16,14 @@ pub struct AuthLocal {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AuthResponse {
+    pub access_token: String,
+    pub refresh_token: String,
+    pub token_type: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserResponse {
     pub user_id: Uuid,
     pub username: Option<String>,

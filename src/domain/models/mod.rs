@@ -1,6 +1,7 @@
 /* domain models module */
 
-pub mod auth_provider;
-pub mod user;
+mod auth;
+mod user;
 
+pub use auth::{AuthProvider, JwtClaims, RefreshTokenClaims, Session, TokenType};
 pub use user::User;

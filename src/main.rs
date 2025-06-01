@@ -9,6 +9,7 @@ use gandalf::{
     app,
     config::{database, get_config, telemetry},
 };
+use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing_subscriber::{EnvFilter, fmt, prelude::*};
@@ -25,7 +26,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind(format!("0.0.0.0:{}", config.app_port))
         .await
         .expect("Failed to bind to address");
-    let app = app::build_app(Arc::new(db_connection_pool.clone()));
+    let app = app::build_app(Arc::new(db_connection_pool.clone()))
+        .into_make_service_with_connect_info::<SocketAddr>();
 
     tracing::info!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app)

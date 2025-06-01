@@ -4,7 +4,9 @@ This module contains the repository interfaces and implementations for the appli
 */
 
 mod errors;
-pub mod user_repo;
+mod session_repo;
+mod user_repo;
 
 pub use errors::{Error, Result};
+pub use session_repo::{PgSessionRepository, SessionRepository};
 pub use user_repo::{PgUserRepository, UserRepository};

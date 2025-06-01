@@ -35,7 +35,7 @@ docker compose -f "$COMPOSE_FILE" down
 
 # Extract volume names from docker-compose file using grep and awk
 echo "📋 Extracting volume names from $COMPOSE_FILE..."
-VOLUMES=$(grep -A 20 "^volumes:" "$COMPOSE_FILE" | grep -v "^volumes:" | grep -v "^\s*#" | grep -v "^\s*$" | grep -v "^\s*-" | awk -F: '{print $1}' | sed 's/^ *//' | sed 's/ *$//')
+VOLUMES=$(awk '/^volumes:/{flag=1; next} flag && /^[a-zA-Z_]/{flag=0} flag && /^  [a-zA-Z0-9_-]+:/{gsub(/^  /, ""); gsub(/:.*/, ""); print}' "$COMPOSE_FILE")
 
 if [ -z "$VOLUMES" ]; then
   echo "⚠️ No named volumes found in $COMPOSE_FILE"
@@ -43,7 +43,7 @@ else
   echo "🗑️ Removing volumes:"
   for VOLUME in $VOLUMES; do
     echo "  - Removing $VOLUME..."
-    docker volume rm "$VOLUME" 2>/dev/null || echo "    ⚠️ Could not remove volume $VOLUME (might not exist)"
+    docker volume rm "local_$VOLUME" 2>/dev/null || echo "    ⚠️ Could not remove volume local_$VOLUME (might not exist)"
   done
 fi
 

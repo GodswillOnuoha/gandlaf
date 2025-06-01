@@ -8,8 +8,11 @@ use std::sync::Arc;
 use tokio_postgres::types::ToSql;
 
 use super::Result;
+use crate::adapters::dtos::AuthUserDto;
 use crate::config::database::PgPool;
-use crate::domain::models::user::User;
+use crate::domain::models::User;
+
+use tracing::debug;
 
 #[async_trait]
 pub trait UserRepository: Send + Sync {
@@ -25,6 +28,18 @@ pub struct PgUserRepository {
 impl PgUserRepository {
     pub fn new(pool: Arc<PgPool>) -> Self {
         Self { pool }
+    }
+
+    fn find_auth_user_query() -> &'static str {
+        r#"
+            SELECT
+                id,
+                external_id,
+                email,
+                password_hash
+            FROM auth.users
+            WHERE email = $1
+        "#
     }
 
     fn email_exists_query() -> &'static str {
@@ -69,6 +84,25 @@ impl PgUserRepository {
                 $21, $22
             )
         "#
+    }
+
+    pub async fn find_auth_user(&self, id: &str) -> Result<Option<AuthUserDto>> {
+        let conn = self.pool.get().await?;
+        let params: &[&(dyn ToSql + Sync)] = &[&id];
+        let result = conn.query_opt(Self::find_auth_user_query(), params).await?;
+
+        match result {
+            Some(row) => {
+                debug!("row: {:?}", row);
+
+                Ok(Some(AuthUserDto {
+                    id: row.get("id"),
+                    email: row.get("email"),
+                    password_hash: row.get("password_hash"),
+                }))
+            }
+            None => Ok(None),
+        }
     }
 }
 
