@@ -4,10 +4,9 @@ This module holds the user related models
 
 use chrono::{DateTime, Utc};
 use std::fmt;
-use std::net::IpAddr;
 use uuid::Uuid;
 
-use super::auth::AuthProvider;
+use super::auth::{AccessRange, AuthProvider};
 #[derive(Debug, Clone)]
 pub struct User {
     pub id: Uuid,
@@ -25,12 +24,10 @@ pub struct User {
     pub email_verification_sent_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub last_login_at: Option<DateTime<Utc>>,
     pub requires_mfa: bool,
     pub auth_provider: AuthProvider,
     pub user_state: UserState,
-    pub last_login_ip: Option<IpAddr>,
-    pub last_user_agent: Option<String>,
+    pub access_range: AccessRange,
     pub deletion_scheduled_at: Option<DateTime<Utc>>,
 }
 
@@ -52,12 +49,10 @@ impl Default for User {
             email_verification_sent_at: None,
             created_at: Utc::now(),
             updated_at: Utc::now(),
-            last_login_at: None,
             requires_mfa: false,
             auth_provider: AuthProvider::default(),
             user_state: UserState::default(),
-            last_login_ip: None,
-            last_user_agent: None,
+            access_range: AccessRange::default(),
             deletion_scheduled_at: None,
         }
     }

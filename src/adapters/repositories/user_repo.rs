@@ -36,7 +36,8 @@ impl PgUserRepository {
                 id,
                 external_id,
                 email,
-                password_hash
+                password_hash,
+                access_range
             FROM auth.users
             WHERE email = $1
         "#
@@ -69,19 +70,16 @@ impl PgUserRepository {
                 email_verification_sent_at,
                 created_at,
                 updated_at,
-                last_login_at,
                 requires_mfa,
                 auth_provider,
                 user_state,
-                last_login_ip,
-                last_user_agent,
+                access_range,
                 deletion_scheduled_at
             ) VALUES (
                 $1, $2, $3, $4, $5,
                 $6, $7, $8, $9, $10,
                 $11, $12, $13, $14, $15,
-                $16, $17, $18, $19, $20,
-                $21, $22
+                $16, $17, $18, $19, $20
             )
         "#
     }
@@ -99,6 +97,7 @@ impl PgUserRepository {
                     id: row.get("id"),
                     email: row.get("email"),
                     password_hash: row.get("password_hash"),
+                    access_range: row.get("access_range"),
                 }))
             }
             None => Ok(None),
@@ -138,12 +137,10 @@ impl UserRepository for PgUserRepository {
             &user.email_verification_sent_at,
             &user.created_at,
             &user.updated_at,
-            &user.last_login_at,
             &user.requires_mfa,
             &user.auth_provider.to_string(),
             &user.user_state.to_string(),
-            &user.last_login_ip,
-            &user.last_user_agent,
+            &user.access_range.to_string(),
             &user.deletion_scheduled_at,
         ];
 

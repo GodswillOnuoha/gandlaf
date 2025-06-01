@@ -10,6 +10,7 @@ pub struct AuthUserDto {
     pub id: Uuid,
     pub email: String,
     pub password_hash: String,
+    pub access_range: String,
 }
 
 pub struct DeviceInfo {

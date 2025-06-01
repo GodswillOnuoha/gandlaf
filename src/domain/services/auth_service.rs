@@ -131,8 +131,7 @@ impl AuthService {
         // Access token claims
         let access_claims = JwtClaims {
             sub: user.id.to_string(),
-            access_range: "user".into(),
-            scope: "user".into(),
+            scope: user.access_range.clone(),
             sid: session.id,
             iss: self.config.app_host.clone(),
             aud: "app.teta".into(),

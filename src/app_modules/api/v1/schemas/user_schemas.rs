@@ -34,7 +34,7 @@ pub struct UserResponse {
     pub user_state: String,
     pub requires_mfa: bool,
     pub created_at: String,
-    pub last_login_at: Option<String>,
+    pub access_range: String,
 }
 
 impl From<User> for UserResponse {
@@ -49,7 +49,7 @@ impl From<User> for UserResponse {
             user_state: user.user_state.to_string(),
             requires_mfa: user.requires_mfa,
             created_at: user.created_at.to_rfc3339(),
-            last_login_at: user.last_login_at.map(|dt| dt.to_rfc3339()),
+            access_range: user.access_range.to_string(),
         }
     }
 }
@@ -81,10 +81,10 @@ mod tests {
             "externalId": null,
             "emailVerified": false,
             "authProvider": "local",
+            "accessRange": "user",
             "userState": "registered",
             "requiresMfa": false,
             "createdAt": "2025-05-04T09:57:13.479118+00:00",
-            "lastLoginAt": null
         });
 
         let actual = serde_json::to_value(user_response).unwrap();
