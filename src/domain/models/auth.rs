@@ -18,7 +18,6 @@ type ResourceAccess = HashMap<String, HashMap<String, Vec<String>>>;
 pub struct JwtClaims {
     pub sub: String,          // User ID
     pub access_range: String, // Permissions/scope
-    pub preferred_username: String,
     pub scope: String,
     pub sid: Uuid,                       // Session ID
     pub iss: String,                     // Issuer (auth server)
@@ -29,6 +28,7 @@ pub struct JwtClaims {
     pub nbf: i64,                        // Not before (optional)
     pub auth_time: i64,                  // Last authentication time
     pub resource_access: ResourceAccess, // Resource access permissions
+    pub token_type: String,              // "access" or "refresh"
 }
 
 impl JwtClaims {
@@ -44,6 +44,29 @@ impl JwtClaims {
     }
 }
 
+// Refresh token claims structure
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RefreshTokenClaims {
+    pub sub: String,        // user_id
+    pub session_id: String, // links to session
+    pub exp: i64,           // expiration
+    pub iat: i64,           // issued at
+    pub token_type: String, // "refresh"
+}
+impl RefreshTokenClaims {
+    pub fn to_jwt(&self, secret: &str) -> String {
+        let token = encode(
+            &Header::new(Algorithm::HS256),
+            &self,
+            &EncodingKey::from_secret(secret.as_bytes()),
+        )
+        .expect("Jwt Generation encoding should not fail");
+
+        token
+    }
+}
+
+// Session structure for storing user sessions
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Session {
     pub id: Uuid,
@@ -62,6 +85,35 @@ pub struct Session {
     pub revoked_at: Option<DateTime<Utc>>,
 }
 
+// Tokentype enum
+#[derive(Debug)]
+pub enum TokenType {
+    Access,
+    Refresh,
+}
+impl std::str::FromStr for TokenType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "access" => Ok(TokenType::Access),
+            "refresh" => Ok(TokenType::Refresh),
+            _ => Err(format!("Invalid token type: {}", s)),
+        }
+    }
+}
+impl fmt::Display for TokenType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Convert enum variant to string representation
+        let token_type_str = match self {
+            TokenType::Access => "access",
+            TokenType::Refresh => "refresh",
+        };
+        write!(f, "{}", token_type_str)
+    }
+}
+
+// AuthProvider enum
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub enum AuthProvider {
     #[default]

@@ -11,3 +11,10 @@ pub struct AuthUserDto {
     pub email: String,
     pub password_hash: String,
 }
+
+pub struct DeviceInfo {
+    pub device_type: String,
+    pub device_name: String,
+    pub browser: String,
+    pub os: String,
+}

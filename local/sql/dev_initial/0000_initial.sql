@@ -51,7 +51,7 @@ CREATE INDEX idx_users_auth_provider ON auth.users(auth_provider);
 CREATE TABLE auth.sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    refresh_token_hash VARCHAR(255) NOT NULL,
+    refresh_token_hash VARCHAR NOT NULL,
     device_identifier VARCHAR(255) NULL,
     device_name VARCHAR(255) NULL,
     device_type VARCHAR(50) NULL,  -- 'mobile', 'desktop', 'tablet', etc.
